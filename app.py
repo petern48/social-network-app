@@ -21,63 +21,48 @@ Session(app)
 CORS(app)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    
+    # Render profile for the user that's logged in
+    if request.method == "GET":
+        user_id = session["user_id"]
+    
+    # Render another user's profile
+    if request.method == "POST":
+        user_id = request.form.get("user_id")
+        
+        
+    conn = connectDB()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE id=?", [user_id])
+    user = cur.fetchall()
+    
+    conn.commit()
+    conn.close()
+    
+    return render_template("profile.html", user=user[0])
+
+
+@app.route("/", methods=["GET", "POST"])
 @login_required
 def index():
-    
-    if request.method == 'GET':
-        pass
-    
-    if request.method == 'POST':
-        name = request.form.get('name')
-        post = request.form.get('post')
-        create_post(name, post)
-        
-    posts = get_posts()
-    
-    return render_template('index.html', posts=posts)
-
-@app.route('/login', methods=['GET','POST'])
-def login():
-    """Login User"""
-    
-    # Forget any user id
-    session.clear()
     
     if request.method == "GET":
         pass
     
     if request.method == "POST":
+        name = request.form.get("name")
+        post = request.form.get("post")
+        create_post(name, post)
         
-        if not request.form.get("username"):
-            return error("Must provide username")
-        if not request.form.get("password"):
-            return error("Must provide password")
-        
-        conn = connectDB()
-        cur = conn.cursor()
-        
-        cur.execute("SELECT * FROM users WHERE username = ?", [request.form.get("username")])
-        rows = cur.fetchall()
-        
-        conn.commit()
-        conn.close()
-
-        # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            error("Invalid username and/or password")
-        
-        # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
-
-        # Redirect user to home page
-        return redirect("/")
-        
-        
-    return render_template("login.html")
+    posts = get_posts()
+    
+    return render_template("index.html", posts=posts)
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route("/register", methods=["GET", "POST"])
 def register():
     """Register User"""
     
@@ -131,16 +116,52 @@ def register():
         # Generate a password hash
         hash = generate_password_hash(password, method='pbkdf2:sha1', salt_length=8)
 
-        params = (username, hash)
         # Insert the new user into users
         cur.execute("INSERT INTO users(username, hash) VALUES(?, ?)", [username, hash])
-        id = cur.fetchall()
 
         conn.commit()
         conn.close()
         
         # Return to login page once registered
         return redirect("/login")
+    
+    
+@app.route('/login', methods=["GET","POST"])
+def login():
+    """Login User"""
+    
+    # Forget any user id
+    session.clear()
+    
+    if request.method == "GET":
+        return render_template("login.html")
+    
+    if request.method == "POST":
+        
+        if not request.form.get("username"):
+            return error("Must provide username")
+        if not request.form.get("password"):
+            return error("Must provide password")
+        
+        conn = connectDB()
+        cur = conn.cursor()
+        
+        cur.execute("SELECT * FROM users WHERE username = ?", [request.form.get("username")])
+        rows = cur.fetchall()
+        
+        conn.commit()
+        conn.close()
+
+        # Ensure username exists and password is correct
+        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
+            error("Invalid username and/or password")
+        
+        # Remember which user has logged in
+        session["user_id"] = rows[0]["id"]
+        session["username"] = request.form.get("username")
+
+        # Redirect user to home page
+        return redirect("/")
 
 
 @app.route("/logout")

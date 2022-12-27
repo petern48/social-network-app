@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ user["username"] }}{% endblock %}
+
+{% block body %}
+
+    <h3>Followers: </h3>
+
+    {% if user["id"] != session["user_id"] %}
+    <h3>Follow</h3>
+
+    {% endif %}
+
+{% endblock %}

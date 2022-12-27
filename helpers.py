@@ -28,8 +28,8 @@ def get_posts():
     conn = connectDB()
     cur = conn.cursor()
     cur.execute("SELECT * FROM posts WHERE user_id = ?", [session["user_id"]])
-    
     posts = cur.fetchall()
+    
     return posts
 
 
