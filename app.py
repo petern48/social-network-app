@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3 as sql
 from os import path
 from flask_cors import CORS
-from helpers import error, create_post, get_posts, login_required
+from helpers import error, create_post, get_posts, login_required, connectDB
 
 
 app = Flask(__name__)
@@ -20,12 +20,6 @@ Session(app)
 # Protect Security
 CORS(app)
 
-# Get directory name and its path
-ROOT = path.dirname(path.relpath(__file__))
-
-# Global Variables
-USERIDINDEX = 0
-HASHINDEX = 2
 
 @app.route('/', methods=['GET', 'POST'])
 @login_required
@@ -60,18 +54,21 @@ def login():
         if not request.form.get("password"):
             return error("Must provide password")
         
-        con = sql.connect(path.join(ROOT, 'posts.db'))
-        cur = con.cursor()
+        conn = connectDB()
+        cur = conn.cursor()
         
         cur.execute("SELECT * FROM users WHERE username = ?", [request.form.get("username")])
         rows = cur.fetchall()
         
+        conn.commit()
+        conn.close()
+
         # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0][HASHINDEX], request.form.get("password")):
+        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
             error("Invalid username and/or password")
         
         # Remember which user has logged in
-        session["user_id"] = rows[0][USERIDINDEX]
+        session["user_id"] = rows[0]["id"]
 
         # Redirect user to home page
         return redirect("/")
@@ -105,8 +102,8 @@ def register():
         if password != confirmation:
             return error("password and confirmation do not match")
 
-        con = sql.connect(path.join(ROOT, 'posts.db'))
-        cur = con.cursor()
+        conn = connectDB()
+        cur = conn.cursor()
 
         # Require the username is different
         cur.execute("SELECT username FROM users WHERE username=?", [username])
@@ -139,8 +136,8 @@ def register():
         cur.execute("INSERT INTO users(username, hash) VALUES(?, ?)", [username, hash])
         id = cur.fetchall()
 
-        con.commit()
-        con.close()
+        conn.commit()
+        conn.close()
         
         # Return to login page once registered
         return redirect("/login")

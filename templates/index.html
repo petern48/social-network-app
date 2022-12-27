@@ -10,7 +10,7 @@
     </form>
     {% for post in posts %}
 
-        <div>{{ post[2] + ": " + post[3] }}</div>
+        <div>{{ post["name"] + ": " + post["content"] }}</div>
         {# 3rd is for name, 4th is for content inside posts table, REMEMBER IF U CHANGE#}
     {% endfor %}
 {% endblock %}
