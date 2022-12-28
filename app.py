@@ -30,8 +30,16 @@ def like():
     
     if request.method == "POST":
         postID = request.form.get("postid")
+        conn = connectDB()
+        cur = conn.cursor()
+        cur.execute("UPDATE posts SET likes = (likes + 1) WHERE id=?", [postID])
         
-        return error(postID)
+        conn.commit()
+        conn.close()
+        
+        # Return to same page
+        return redirect(request.url)
+        
     
 
 @app.route("/profile", methods=["GET", "POST"])
