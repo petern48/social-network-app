@@ -44,11 +44,11 @@ def get_posts(user_id=None):
     
     # Get all posts
     if user_id == None:
-        posts = executeDB("SELECT * FROM posts")
+        posts = executeDB("SELECT * FROM posts ORDER BY datetime DESC")
         
     # Only get user's posts
     else:
-        posts = executeDB("SELECT * FROM posts WHERE user_id = ?", [user_id])
+        posts = executeDB("SELECT * FROM posts WHERE user_id = ? ORDER BY datetime DESC", [user_id])
     
     return posts
 

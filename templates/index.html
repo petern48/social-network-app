@@ -16,9 +16,9 @@
 
         <h3 class="username">{{ post["name"] }}</h3>
         <div class="post">{{ post["content"] }}</div>
-        <form class="inline" action="/like" method="post">
-            <input type="hidden" name="postid" value="{{ post["id"] }}">
-            <button name="like" class="button" type="submit">Like</button>
+        <form class="inline" {#action="/like" method="post"#}>
+            {#<input type="hidden" name="postid" value="{{ post["id"] }}">#}
+            <button name="like" id="{{ post["id"] }}" onclick="like()" class="button" type="button" >Like</button>
         </form>
         <h4 class="inline">{{ post["likes"] }} likes</h4>
         <p class="inline right">{{ post["datetime"] }}</p>

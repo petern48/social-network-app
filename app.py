@@ -41,6 +41,7 @@ def like():
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
+    """Display profile for a user"""
     
     # Render profile for the user that's logged in
     if request.method == "GET":
@@ -60,6 +61,7 @@ def profile():
 @app.route("/", methods=["GET", "POST"])
 @login_required
 def index():
+    """Displays Homepage and create posts"""
     
     if request.method == "GET":
         pass
