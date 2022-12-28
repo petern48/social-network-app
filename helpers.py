@@ -9,11 +9,15 @@ def connectDB():
     conn.row_factory = sql.Row # "dictionary cursor"
     return conn
 
+def error(text):
+    # Displays error
+    return render_template("error.html", text=text)
+
 def create_post(content):
     """Creates a post, given a name and the content to post"""
     
     now = datetime.now()
-    now = now.date()
+    now = now.strftime("%m/%d/%Y, %H:%M")
 
     conn = connectDB()
     cur = conn.cursor()
@@ -42,9 +46,6 @@ def get_posts(user_id=None):
     return posts
 
 
-def error(text):
-    # Displays error
-    return render_template("error.html", text=text)
     
 
 from functools import wraps
