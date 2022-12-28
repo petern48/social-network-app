@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3 as sql
 from os import path
 from flask_cors import CORS
-from helpers import error, create_post, get_posts, login_required, connectDB
+from helpers import error, create_post, get_posts, login_required, executeDB
 
 
 app = Flask(__name__)
@@ -30,12 +30,8 @@ def like():
     
     if request.method == "POST":
         postID = request.form.get("postid")
-        conn = connectDB()
-        cur = conn.cursor()
-        cur.execute("UPDATE posts SET likes = (likes + 1) WHERE id=?", [postID])
-        
-        conn.commit()
-        conn.close()
+
+        executeDB("UPDATE posts SET likes = (likes + 1) WHERE id=?", [postID])
         
         # Return to same page
         return redirect(request.url)
@@ -53,15 +49,8 @@ def profile():
     # Render another user's profile
     if request.method == "POST":
         user_id = request.form.get("user_id")
-        
-        
-    conn = connectDB()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE id=?", [user_id])
-    user = cur.fetchall()
     
-    conn.commit()
-    conn.close()
+    user = executeDB("SELECT * FROM users WHERE id=?", [user_id])
     
     posts = get_posts(user_id)
     
@@ -113,12 +102,8 @@ def register():
         if password != confirmation:
             return error("password and confirmation do not match")
 
-        conn = connectDB()
-        cur = conn.cursor()
-
         # Require the username is different
-        cur.execute("SELECT username FROM users WHERE username=?", [username])
-        usernames = cur.fetchall()
+        usernames = executeDB("SELECT username FROM users WHERE username=?", [username])
         
         if usernames != []:
             return error("username is already taken")
@@ -143,10 +128,7 @@ def register():
         hash = generate_password_hash(password, method='pbkdf2:sha1', salt_length=8)
 
         # Insert the new user into users
-        cur.execute("INSERT INTO users(username, hash) VALUES(?, ?)", [username, hash])
-
-        conn.commit()
-        conn.close()
+        executeDB("INSERT INTO users(username, hash) VALUES(?, ?)", [username, hash])
         
         # Return to login page once registered
         return redirect("/login")
@@ -169,14 +151,7 @@ def login():
         if not request.form.get("password"):
             return error("Must provide password")
         
-        conn = connectDB()
-        cur = conn.cursor()
-        
-        cur.execute("SELECT * FROM users WHERE username = ?", [request.form.get("username")])
-        rows = cur.fetchall()
-        
-        conn.commit()
-        conn.close()
+        rows = executeDB("SELECT * FROM users WHERE username = ?", [request.form.get("username")])
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
