@@ -1,21 +1,22 @@
 import sqlite3 as sql
 from os import path
 from flask import redirect, render_template, request, session
+import datetime
 
 
 def connectDB():
-    conn = sql.connect('posts.db')
+    conn = sql.connect('network.db')
     conn.row_factory = sql.Row # "dictionary cursor"
     return conn
 
 def create_post(name, content):
     """Creates a post, given a name and the content to post"""
     
-    user_id = session["user_id"]
+    now = datetime.now()
 
     conn = connectDB()
     cur = conn.cursor()
-    cur.execute('INSERT INTO posts (user_id, name, content) values (?, ?, ?)', [user_id, name, content])
+    cur.execute('INSERT INTO posts (user_id, name, content, datetime) values (?, ?, ?, ?)', [session["user_id"], name, content, now])
     
     # Finalize database
     conn.commit()
