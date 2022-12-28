@@ -6,6 +6,19 @@
 
     <h3>Followers: </h3>
 
+
+    {% for post in posts %}
+        <div>
+            <div>{{ post["name"] + ": " + post["content"] }}</div>
+            <form action"/like" method="post">
+                <input name="like{{ post["id"] }}" type="submit" value="Like">
+            </form>
+            <p class="inline">{{ post["likes"] }} likes</p>
+            <p class="inline">{{ post["datetime"] }}</p>
+        </div>
+
+    {% endfor %}
+
     {% if user["id"] != session["user_id"] %}
     <h3>Follow</h3>
 

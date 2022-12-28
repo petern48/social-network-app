@@ -3,15 +3,25 @@
 {% block title %} Home {% endblock %}
 
 {% block body %}
-    <h2>New Post</h2>
-    <form action="/" method="post">
-        <input placeholder="Name" name="name">
-        <input placeholder="Post Content" name="post">
-        <input type="submit" value="Post">
-    </form>
+    <div class="post">
+        <h2>Create New Post</h2>
+        <h3 class="username">{{ session["username"] }}</h3>
+        <form action="/" method="post">
+            <input class="post" placeholder="Post Content" name="content">
+            <br>
+            <input class="button" type="submit" value="Post">
+        </form>
+    </div>
     {% for post in posts %}
 
-        <div>{{ post["name"] + ": " + post["content"] }}</div>
+        <h3 class="username">{{ post["name"] }}</h3>
+        <div class="post">{{ post["content"] }}</div>
+        <form class="inline" action="/like" method="post">
+            <input type="hidden" name="postid" value="{{ post["id"] }}">
+            <button name="like" class="button" type="submit">Like</button>
+        </form>
+        <h4 class="inline">{{ post["likes"] }} likes</h4>
+        <p class="inline right">{{ post["datetime"] }}</p>
         
     {% endfor %}
 {% endblock %}

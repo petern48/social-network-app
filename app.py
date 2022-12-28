@@ -21,6 +21,19 @@ Session(app)
 CORS(app)
 
 
+@app.route("/like", methods=["GET", "POST"])
+@login_required
+def like():
+    
+    if request.method == "GET":
+        return redirect("/")
+    
+    if request.method == "POST":
+        postID = request.form.get("postid")
+        
+        return error(postID)
+    
+
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
@@ -42,7 +55,9 @@ def profile():
     conn.commit()
     conn.close()
     
-    return render_template("profile.html", user=user[0])
+    posts = get_posts(user_id)
+    
+    return render_template("profile.html", user=user[0], posts=posts)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -53,10 +68,13 @@ def index():
         pass
     
     if request.method == "POST":
-        name = request.form.get("name")
-        post = request.form.get("post")
-        create_post(name, post)
+        content = request.form.get("content")
+        if content:
+            create_post(content)
+            
+        posts = get_posts()
         
+    # Gets all posts from all users
     posts = get_posts()
     
     return render_template("index.html", posts=posts)
@@ -154,11 +172,12 @@ def login():
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            error("Invalid username and/or password")
+            return error("Invalid username and/or password")
         
-        # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
-        session["username"] = request.form.get("username")
+        if rows:
+            # Remember which user has logged in
+            session["user_id"] = rows[0]["id"]
+            session["username"] = request.form.get("username")
 
         # Redirect user to home page
         return redirect("/")

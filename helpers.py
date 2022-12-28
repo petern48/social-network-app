@@ -1,7 +1,7 @@
 import sqlite3 as sql
 from os import path
 from flask import redirect, render_template, request, session
-import datetime
+from datetime import datetime
 
 
 def connectDB():
@@ -9,26 +9,34 @@ def connectDB():
     conn.row_factory = sql.Row # "dictionary cursor"
     return conn
 
-def create_post(name, content):
+def create_post(content):
     """Creates a post, given a name and the content to post"""
     
     now = datetime.now()
+    now = now.date()
 
     conn = connectDB()
     cur = conn.cursor()
-    cur.execute('INSERT INTO posts (user_id, name, content, datetime) values (?, ?, ?, ?)', [session["user_id"], name, content, now])
+    cur.execute('INSERT INTO posts (user_id, name, content, datetime) values (?, ?, ?, ?)', [session["user_id"], session["username"], content, now])
     
     # Finalize database
     conn.commit()
     conn.close()
 
     
-def get_posts():
-    """Returns all posts"""
+def get_posts(user_id=None):
+    """Returns all of posts. Pass in user_id to get only their posts"""
     
     conn = connectDB()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM posts WHERE user_id = ?", [session["user_id"]])
+    
+    # Get all posts
+    if user_id == None:
+        cur.execute("SELECT * FROM posts")
+    # Only get user's posts
+    else:
+        cur.execute("SELECT * FROM posts WHERE user_id = ?", [user_id])
+        
     posts = cur.fetchall()
     
     return posts
