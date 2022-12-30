@@ -5,15 +5,27 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Register Page</h1>
-    <form action="/register" method="post">
-        <div>
+    <div class="box right" style="margin-left:-300px">
+        <p>Create a password with <b>at least</b> the following:</p>
+        <ul>
+            <li>7 chararacters</li>
+            <li>1 number</li>
+            <li>1 uppercase letter</li>
+            <li>1 lowercase letter</li>
+        </ul>
+    </div>
+    <div class="center">
+        <h1>Register Page</h1>
+        <form action="/register" method="post">
             <input autocomplete="off" autofocus id="username" name="username" placeholder="Username" type="text">
-        </div>
-        <div>
+            <br>
+            <br>
             <input id="password" name="password" placeholder="Password" type="password">
+            <br>
             <input id="confirmation" name="confirmation" placeholder="Confirm Password" type="password">
-        </div>
-        <button type="submit">Register</button>
-    </form>
+            <br>
+            <br>
+            <button class="button" type="submit">Register</button>
+        </form>
+    </div>
 {% endblock %}

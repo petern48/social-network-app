@@ -22,4 +22,28 @@
 .button {
     background-color:blue;
     color: white;
+    border-radius: 4px;
+}
+
+.center {
+    text-align: center;
+}
+
+.box {
+    width: 250px;
+    height: 150px;
+    border: 1px solid gray;
+    padding-top: 0px;
+    padding-left: 10px;
+    padding-right: 5px;
+    
+}
+
+.right {
+    float: right;
+}
+
+#page-padding {
+    padding-left: 100px;
+    padding-right:100px;
 }
