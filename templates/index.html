@@ -18,9 +18,9 @@
         <div class="post">{{ post["content"] }}</div>
         <form class="inline" {#action="/like" method="post"#}>
             {#<input type="hidden" name="postid" value="{{ post["id"] }}">#}
-            <button name="like" id="{{ post["id"] }}" onclick="like()" class="button" type="button" >Like</button>
+            <button name="post{{ post["id"] }}" class="like button" type="button">Like</button>
         </form>
-        <h4 class="inline">{{ post["likes"] }} likes</h4>
+        <h4 name="post{{ post["id"] }}" class="inline">{{ post["likes"] }} likes</h4>
         <p class="inline right">{{ post["datetime"] }}</p>
         
     {% endfor %}
