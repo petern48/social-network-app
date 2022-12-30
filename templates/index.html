@@ -12,16 +12,20 @@
             <input class="button" type="submit" value="Post">
         </form>
     </div>
+    <br>
     {% for post in posts %}
-
-        <h3 class="username">{{ post["name"] }}</h3>
+        <form action="/profile" method="post">
+            <input type="hidden" name="user_id" value="{{post['user_id']}}">
+            <input class="profile-name" type="submit" value="{{ post["username"] }}">
+        </form>
         <div class="post">{{ post["content"] }}</div>
         <form class="inline" {#action="/like" method="post"#}>
-            {#<input type="hidden" name="postid" value="{{ post["id"] }}">#}
+            {#<input type="hidden" name="postid" value="{{ post['id'] }}">#}
             <button name="post{{ post["id"] }}" class="like button" type="button">Like</button>
         </form>
         <h4 name="post{{ post["id"] }}" class="inline">{{ post["likes"] }} likes</h4>
         <p class="inline right">{{ post["datetime"] }}</p>
+        <br>
         
     {% endfor %}
 {% endblock %}

@@ -47,3 +47,16 @@
     padding-left: 100px;
     padding-right:100px;
 }
+
+.profile-name {
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    /*optional*/
+    font-family: arial, sans-serif;
+    font-size: 20px;
+    /*input has OS specific font-family*/
+    color: black;
+    cursor: pointer;
+    font-weight: bold;
+}

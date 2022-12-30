@@ -8,6 +8,8 @@ CREATE TABLE users (
     followers INTEGER DEFAULT 0 NOT NULL
 );
 
+CREATE UNIQUE INDEX username on users (username);
+
 DROP TABLE IF EXISTS posts;
 CREATE TABLE posts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -19,4 +21,23 @@ CREATE TABLE posts (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE UNIQUE INDEX username on users (username);
+DROP TABLE IF EXISTS comments;
+CREATE TABLE comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    comment TEXT NOT NULL,
+    datetime NUMERIC NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (post_id) REFERENCES posts(id)
+);
+
+DROP TABLE IF EXISTS followers;
+CREATE TABLE followers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    following_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (following_id) REFERENCES users(id)
+);

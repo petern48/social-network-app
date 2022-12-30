@@ -31,12 +31,12 @@ def error(text):
     return render_template("error.html", text=text)
 
 def create_post(content):
-    """Creates a post, given a name and the content to post"""
+    """Creates a post, given the content to post"""
     
     now = datetime.now()
     now = now.strftime("%m/%d/%Y, %H:%M")
 
-    executeDB('INSERT INTO posts (user_id, name, content, datetime) values (?, ?, ?, ?)', [session["user_id"], session["username"], content, now])
+    executeDB('INSERT INTO posts (user_id, username, content, datetime) values (?, ?, ?, ?)', [session["user_id"], session["username"], content, now])
 
     
 def get_posts(user_id=None):

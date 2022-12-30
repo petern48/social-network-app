@@ -4,12 +4,13 @@
 
 {% block body %}
 
-    <h3>Followers: </h3>
+    <h1 class="center">{{ user["username"] }} </h1>
 
+    <h3 class="center">Followers: TODO</h3>
 
     {% for post in posts %}
         <div>
-            <div>{{ post["name"] + ": " + post["content"] }}</div>
+            <div>{{ post["username"] + ": " + post["content"] }}</div>
             <form action"/like" method="post">
                 <input name="like{{ post["id"] }}" type="submit" value="Like">
             </form>
