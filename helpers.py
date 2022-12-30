@@ -40,7 +40,7 @@ def create_post(content):
 
     
 def get_posts(user_id=None):
-    """Returns all of posts. Pass in user_id to get only their posts"""
+    """Returns all of posts or Pass in user_id to get only their posts, in reverse chronological order"""
     
     # Get all posts
     if user_id == None:
