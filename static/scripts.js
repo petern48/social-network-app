@@ -47,6 +47,12 @@ function findPost(postId) {
     return null;
 }
 
+function clearChildren(parent) {
+    while (parent.firstChild){
+        parent.removeChild(parent.firstChild);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
 
     // Create an object for each post
@@ -56,6 +62,7 @@ document.addEventListener("DOMContentLoaded", function() {
         let post = new Post(postId);
     });
     
+    // Like and Unlike Feature
     document.querySelectorAll(".like").forEach(function(element) {
         
         // Click Like button
@@ -80,4 +87,64 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
     });
+
+    // Comment Feature
+    document.querySelectorAll(".comment").forEach(function (element) {
+        
+        const post = findPost(element.getAttribute("name"));
+        
+        element.addEventListener("click", function () {
+            
+            const div = element.nextElementSibling;
+            let submit;
+            let textBox;
+
+            // Open comment box
+            if (element.innerHTML == "Add Comment") {
+                textBox = document.createElement('textarea');
+                submit = document.createElement('input');
+                submit.setAttribute("type", "submit");
+                submit.setAttribute("class", "button")
+                submit.setAttribute("value", "Comment");
+                textBox.setAttribute("class", "text-box");
+                div.append(textBox);
+                div.append(submit);
+                element.innerHTML = "Hide Comment Box";
+            }
+            // Close comment box
+            else {
+                clearChildren(div);
+                element.innerHTML = "Add Comment";
+            }
+            
+            // When submit button is clicked
+            if (submit) {
+                submit.addEventListener("click", function () {
+    
+                    if (textBox.value) {
+                        post.addComment(textBox.value);
+                        post.nComments++;
+                        textBox.value = "";
+                        console.log(post.comments);
+                        const div = document.querySelector(`#comments${post.id}`);
+                        console.log(div);
+                        clearChildren(div);
+
+                        for (let i = 0; i < post.nComments; i++) {
+                            const comment = document.createElement("div");
+                            comment.innerHTML = post.comments[i];
+                            comment.setAttribute("class", "comment");
+                            
+                            div.append(comment);
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    // Post Comment
+
+
 });
+

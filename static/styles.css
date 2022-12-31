@@ -15,14 +15,34 @@
     padding: 10px;
     margin-bottom:0px;
 }
+
+.text-box {
+    height: fit-content;
+    width: 95%;
+    max-width: viewport;
+    min-height: 50px;
+}
+
+.comment{
+    margin-top: 0px;
+    border: 1px solid gray;
+}
+
 .right {
     float: right;
+}
+
+.center-button {
+    font-size: 20px;
+    margin: auto;
 }
 
 .button {
     background-color:blue;
     color: white;
     border-radius: 4px;
+    padding: 5px;
+    display:block; /* puts button on next line */
 }
 
 .center {
@@ -36,7 +56,6 @@
     padding-top: 0px;
     padding-left: 10px;
     padding-right: 5px;
-    
 }
 
 .right {
