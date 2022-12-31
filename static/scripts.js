@@ -53,16 +53,15 @@ function clearChildren(parent) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-
-    // Create an object for each post
+function createPosts() {
     document.querySelectorAll(".like").forEach(function(element) {
 
         const postId = element.getAttribute("name");
         let post = new Post(postId);
     });
-    
-    // Like and Unlike Feature
+}
+
+function likeFeature() {
     document.querySelectorAll(".like").forEach(function(element) {
         
         // Click Like button
@@ -87,64 +86,73 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
     });
+}
 
-    // Comment Feature
+function commentFeature() {
     document.querySelectorAll(".comment").forEach(function (element) {
         
         const post = findPost(element.getAttribute("name"));
-        
+
         element.addEventListener("click", function () {
             
-            const div = element.nextElementSibling;
-            let submit;
-            let textBox;
-
+            const inputdiv = element.nextElementSibling;
+                
             // Open comment box
             if (element.innerHTML == "Add Comment") {
-                textBox = document.createElement('textarea');
-                submit = document.createElement('input');
+                const textBox = document.createElement('textarea');
+                const submit = document.createElement('input');
                 submit.setAttribute("type", "submit");
                 submit.setAttribute("class", "button")
                 submit.setAttribute("value", "Comment");
                 textBox.setAttribute("class", "text-box");
-                div.append(textBox);
-                div.append(submit);
-                element.innerHTML = "Hide Comment Box";
-            }
-            // Close comment box
-            else {
-                clearChildren(div);
-                element.innerHTML = "Add Comment";
-            }
-            
-            // When submit button is clicked
-            if (submit) {
+
+                // Submit Comment Button Feature
                 submit.addEventListener("click", function () {
     
                     if (textBox.value) {
                         post.addComment(textBox.value);
                         post.nComments++;
                         textBox.value = "";
-                        console.log(post.comments);
-                        const div = document.querySelector(`#comments${post.id}`);
-                        console.log(div);
-                        clearChildren(div);
+                        const commentdiv = document.querySelector(`#comments${post.id}`);
+                        // Clear comments
+                        clearChildren(commentdiv);
 
+                        // Display Comments
                         for (let i = 0; i < post.nComments; i++) {
                             const comment = document.createElement("div");
                             comment.innerHTML = post.comments[i];
                             comment.setAttribute("class", "comment");
                             
-                            div.append(comment);
+                            commentdiv.append(comment);
                         }
                     }
                 });
+
+                // Append the textbox and submit button
+                inputdiv.append(textBox);
+                inputdiv.append(submit);
+                element.innerHTML = "Hide Comment Box";
             }
+
+            // Close comment box if it said "Hide Comment Box"
+            else {
+                clearChildren(inputdiv);
+                element.innerHTML = "Add Comment";
+            }
+
         });
     });
+}
 
-    // Post Comment
+document.addEventListener("DOMContentLoaded", function() {
 
+    // Create an object for each post
+    createPosts();
+    
+    // Like and Unlike Feature
+    likeFeature();
 
+    // Comment Feature
+    commentFeature();
 });
 
