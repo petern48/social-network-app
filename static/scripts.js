@@ -62,86 +62,50 @@ function createPosts() {
     });
 }
 
+function toggleCommentBox(postId, option) {
+    if (option == "open") {
+        document.querySelector(`#comment-input${postId}`).style.display = "block";
+    }
+    else {
+        document.querySelector(`#comment-input${postId}`).style.display = "none";
+    }
+}
+
 function commentFeature() {
-    document.querySelectorAll(".comment").forEach(function (element) {
+    document.querySelectorAll(".comment-toggle").forEach(function (element) {
         
-        const post = findPost(element.getAttribute("name"));
+        const postId = element.getAttribute("name");
 
         element.addEventListener("click", function () {
             
-            const inputdiv = element.nextElementSibling;
+            const inputform = element.nextElementSibling;
                 
             // Open comment box
             if (element.innerHTML == "Add Comment") {
-                const textBox = document.createElement('textarea');
-                const submit = document.createElement('input');
-                submit.setAttribute("type", "submit");
-                submit.setAttribute("class", "button")
-                submit.setAttribute("value", "Comment");
-                textBox.setAttribute("class", "text-box");
+                toggleCommentBox(postId, "open");
+                element.innerHTML = "Hide Comment Box";
 
+                const submit = document.querySelector(`#submit-comment${postId}`);
+                const textBox = document.querySelector(`#textbox${postId}`)
+            
                 // Submit Comment Button Feature
                 submit.addEventListener("click", function () {
-    
+
+                    // Clear Comment Box
                     if (textBox.value) {
-                        post.addComment(textBox.value);
-                        post.nComments++;
+                        console("textBox has a value");
                         textBox.value = "";
-                        const commentdiv = document.querySelector(`#comments${post.id}`);
-                        // Clear comments
-                        clearChildren(commentdiv);
-
-                        // Display Comments
-                        for (let i = 0; i < post.nComments; i++) {
-                            const comment = document.createElement("div");
-                            comment.innerHTML = post.comments[i];
-                            comment.setAttribute("class", "comment");
-                            
-                            commentdiv.append(comment);
-                        }
-
-
-                        /*
-                        console.log(post);
-                        post.postData();
-                        // Generate url
-                        const ROOT_URL = window.location.href;
-                        let url = `${ROOT_URL + post.id}`;
-                        console.log(url);
-
-                        
-                        // fetch post
-                        fetch(`/${post.id}`, {
-                            method: "POST",
-                
-                            body: JSON.stringify(post),
-                
-                            headers: { "Content-type": "application/json; charset=UTF-8"}
-                        })
-                        // Convert to JSON
-                        .then(response => response.json())
-                        //
-                        .then(response => console.log(response))
-                        .catch((error) => {
-                            console.log(error);
-                        });
-                        */
+                        element.innerHTML = "Add Comment";
+                        toggleCommentBox(postId, "close");
                     }
                 });
-
-                // Append the textbox and submit button
-                inputdiv.append(textBox);
-                inputdiv.append(submit);
-                element.innerHTML = "Hide Comment Box";
             }
-
+            
             // Close comment box if it said "Hide Comment Box"
             else {
-                clearChildren(inputdiv);
                 element.innerHTML = "Add Comment";
+                toggleCommentBox(postId, "close");
             }
-
-            console.log(post);
         });
     });
 }
@@ -176,3 +140,17 @@ function likeFeature(postId) {
     })
     .catch((error) => console.log(error));
 }
+
+/*
+// Submit Comment Feature
+function submitComment(postId) {
+
+
+    fetch(`/comment-post/${postId}`, {
+        method: "POST",
+        body:
+    })
+    .then((response) => response.json())
+    .then((data) => console.log(data))
+    .catch((error) => console.log(error));
+}*/

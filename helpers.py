@@ -30,13 +30,27 @@ def error(text):
     # Displays error
     return render_template("error.html", text=text)
 
+def create_comment(content, post_id):
+    """Creates a comment for given post"""
+    user_id = session["user_id"]
+    now = datetime.now()
+    now = now.strftime("%m/%d/%Y, %H:%M")
+    
+    username = executeDB("SELECT username FROM users WHERE id=?", [user_id])
+    username = username[0][0]
+    
+    executeDB("INSERT INTO comments (user_id, post_id, username, comment, datetime) VALUES (?,?,?,?,?)", [user_id, post_id, username, content, now])
+
+def get_comments():
+    return executeDB("SELECT * from comments");
+
 def create_post(content):
     """Creates a post, given the content to post"""
     
     now = datetime.now()
     now = now.strftime("%m/%d/%Y, %H:%M")
 
-    executeDB('INSERT INTO posts (user_id, username, content, datetime) values (?, ?, ?, ?)', [session["user_id"], session["username"], content, now])
+    executeDB("INSERT INTO posts (user_id, username, content, datetime) values (?, ?, ?, ?)", [session["user_id"], session["username"], content, now])
 
     
 def get_posts(user_id=None):
@@ -52,8 +66,6 @@ def get_posts(user_id=None):
     
     return posts
 
-
-    
 
 from functools import wraps
 def login_required(f):

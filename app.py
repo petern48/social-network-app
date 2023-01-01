@@ -4,7 +4,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3 as sql
 from os import path
 from flask_cors import CORS
-from helpers import error, create_post, get_posts, login_required, executeDB
+from helpers import error,  get_posts, login_required, executeDB
+from helpers import create_post, create_comment
 
 
 app = Flask(__name__)
@@ -20,6 +21,22 @@ Session(app)
 # Protect Security
 CORS(app)
 
+
+@app.route("/comment-post/<int:id>", methods=["GET", "POST"])
+@login_required
+def comment(id):
+    if request.method == "GET":
+        return redirect("/")
+    
+    if request.method == "POST":
+        content = request.form.get("comment")
+        create_comment(content, id)
+        comments = executeDB("SELECT * FROM comments WHERE post_id=?", [id])
+        
+        return redirect(request.url)
+        #return jsonify({"comments":comments})
+        
+    
 
 @app.route("/like-post/<int:id>", methods=["GET", "POST"])
 @login_required
@@ -79,10 +96,11 @@ def index():
         if content:
             create_post(content)
             
-        posts = get_posts()
         
     # Gets all posts from all users
     posts = get_posts()
+    
+    comments = get_comments()
     
     return render_template("index.html", posts=posts)
 
