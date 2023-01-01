@@ -14,18 +14,20 @@
     </div>
     <br>
     {% for post in posts %}
+        {# Username Profile Link #}
         <form action="/profile" method="post">
             <input type="hidden" name="user_id" value="{{post['user_id']}}">
             <input class="profile-name" type="submit" value="{{ post["username"] }}">
         </form>
+        {# Post Content #}
         <div class="post">{{ post["content"] }}</div>
-        <form class="inline" {#action="/like" method="post"#}>
-            {#<input type="hidden" name="postid" value="{{ post['id'] }}">#}
-            <button name="post{{ post["id"] }}" class="like button" type="button">Like</button>
-        </form>
-        <h4 name="post{{ post["id"] }}" class="inline">{{ post["likes"] }} likes</h4>
+        {# Likes #}
+        <button id="like-button{{ post["id"] }}" onclick=likeFeature({{post['id']}}) class="like button">Like</button>
+        <h4 id="like-count{{ post['id'] }}" class="inline">{{ post["likes"] }} likes</h4>
+        {# Datetime #}
         <p class="inline right">{{ post["datetime"] }}</p>
         <br>
+        {# Comments #}
         <div id="commentspost{{ post["id"] }}"></div>
         <button class="comment" name="post{{ post["id"] }}">Add Comment</button>
         <div class="comment-input">

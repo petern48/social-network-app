@@ -10,6 +10,7 @@ class Post {
         this.nComments = 0;
         allPosts.push(this); // Save this post to allPosts
     }
+
     addLike() {
         this.likes++;
         return true;
@@ -34,9 +35,9 @@ class Post {
         return this.comments;
     }
 
+
 };
 
-    // fetch();
 
 function findPost(postId) {
     for (let i = 0; i < allPosts.length; i++) {
@@ -58,33 +59,6 @@ function createPosts() {
 
         const postId = element.getAttribute("name");
         let post = new Post(postId);
-    });
-}
-
-function likeFeature() {
-    document.querySelectorAll(".like").forEach(function(element) {
-        
-        // Click Like button
-        element.addEventListener("click", function() {
-
-            const post = findPost(element.getAttribute("name"));
-            const button = document.querySelector(`button[name$=${post.id}]`)
-            
-            // If user hasn't liked it already
-            if (button.innerHTML === "Like") {
-                // Update like count, change text to "Unlike"
-                post.addLike();
-                button.innerHTML = "Unlike";
-            }
-            // If user already has liked post
-            else {
-                post.removeLike();
-                button.innerHTML = "Like"
-            }
-            // Update number of likes on webpage
-            document.querySelector(`h4[name$=${post.id}]`).innerHTML = `${post.likes} likes`;
-        });
-
     });
 }
 
@@ -125,6 +99,33 @@ function commentFeature() {
                             
                             commentdiv.append(comment);
                         }
+
+
+                        /*
+                        console.log(post);
+                        post.postData();
+                        // Generate url
+                        const ROOT_URL = window.location.href;
+                        let url = `${ROOT_URL + post.id}`;
+                        console.log(url);
+
+                        
+                        // fetch post
+                        fetch(`/${post.id}`, {
+                            method: "POST",
+                
+                            body: JSON.stringify(post),
+                
+                            headers: { "Content-type": "application/json; charset=UTF-8"}
+                        })
+                        // Convert to JSON
+                        .then(response => response.json())
+                        //
+                        .then(response => console.log(response))
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                        */
                     }
                 });
 
@@ -140,6 +141,7 @@ function commentFeature() {
                 element.innerHTML = "Add Comment";
             }
 
+            console.log(post);
         });
     });
 }
@@ -149,10 +151,28 @@ document.addEventListener("DOMContentLoaded", function() {
     // Create an object for each post
     createPosts();
     
-    // Like and Unlike Feature
-    likeFeature();
 
     // Comment Feature
     commentFeature();
 });
 
+// Like and Unlike Feature
+function likeFeature(postId) {
+    const button = document.querySelector(`#like-button${postId}`);
+    const count = document.querySelector(`#like-count${postId}`);
+
+    fetch(`/like-post/${postId}`, { method: "POST" })
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(`Data: ${data["likes"]}`);
+        count.innerHTML = data["likes"] + " likes";
+
+        if (data["change"] == 1) {
+            button.innerHTML = "Unlike";
+        }
+        else {
+            button.innerHTML = "Like";
+        }
+    })
+    .catch((error) => console.log(error));
+}

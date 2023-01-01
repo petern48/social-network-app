@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, jsonify
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3 as sql
@@ -21,20 +21,28 @@ Session(app)
 CORS(app)
 
 
-@app.route("/like", methods=["GET", "POST"])
+@app.route("/like-post/<int:id>", methods=["GET", "POST"])
 @login_required
-def like():
+def like(id):
     
     if request.method == "GET":
         return redirect("/")
     
     if request.method == "POST":
-        postID = request.form.get("postid")
+        user_id = session["user_id"]
+        liked = executeDB("SELECT * FROM likes WHERE user_id=? AND post_id=?", [user_id, id])
+        if not liked:
+            change = 1
+            executeDB("INSERT INTO likes (user_id, post_id) VALUES (?, ?)", [user_id, id])
+        else:
+            change = -1
+            executeDB("DELETE FROM likes WHERE user_id=? AND post_id=?", [user_id, id])
 
-        executeDB("UPDATE posts SET likes = (likes + 1) WHERE id=?", [postID])
+        executeDB("UPDATE posts SET likes = (likes + ?) WHERE id=?", [change, id])
+        likes = executeDB("SELECT likes FROM posts WHERE id=?", [id])
         
-        # Return to same page
-        return redirect(request.url)
+        # Return to JS file as JSON
+        return jsonify({"likes": likes[0][0], "user_id": user_id, "change":change })
         
     
 
