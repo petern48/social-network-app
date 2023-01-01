@@ -91,16 +91,10 @@ function commentFeature() {
                 // Submit Comment Button Feature
                 submit.addEventListener("click", function () {
 
-                    // Clear Comment Box
-                    if (textBox.value) {
-                        console("textBox has a value");
-                        textBox.value = "";
-                        element.innerHTML = "Add Comment";
-                        toggleCommentBox(postId, "close");
-                    }
+                    element.innerHTML = "Add Comment";
+                    toggleCommentBox(postId, "close");
                 });
             }
-            
             // Close comment box if it said "Hide Comment Box"
             else {
                 element.innerHTML = "Add Comment";
@@ -115,9 +109,10 @@ document.addEventListener("DOMContentLoaded", function() {
     // Create an object for each post
     createPosts();
     
-
     // Comment Feature
     commentFeature();
+
+
 });
 
 // Like and Unlike Feature
@@ -141,16 +136,27 @@ function likeFeature(postId) {
     .catch((error) => console.log(error));
 }
 
-/*
-// Submit Comment Feature
-function submitComment(postId) {
+// Follow and Unfollow Feature
+function followFeature(following_id) {
+    const button = document.querySelector(`#follow-button${following_id}`);
+    const count = document.querySelector(`#follow-count${following_id}`);
 
-
-    fetch(`/comment-post/${postId}`, {
-        method: "POST",
-        body:
-    })
+    fetch(`/follow-user/${following_id}`, {method: "POST"})
     .then((response) => response.json())
-    .then((data) => console.log(data))
+    .then((data) => {
+        console.log(data["followers"]);
+        count.innerHTML = `Followers: ${data["followers"]}`;
+        if (data["change"] == 1) {
+            button.innerHTML = "Unfollow";
+        }
+        else {
+            button.innerHTML = "Follow";
+        }
+    })
     .catch((error) => console.log(error));
-}*/
+}
+
+// Comment Feature
+function updateComments(post_id) {
+    commentdiv = 1;
+}

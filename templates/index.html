@@ -16,31 +16,34 @@
     {% for post in posts %}
         {# Username Profile Link #}
         <form action="/profile" method="post">
-            <input type="hidden" name="user_id" value="{{post['user_id']}}">
-            <input class="profile-name" type="submit" value="{{ post["username"] }}">
+            <input type="hidden" name="user_id" value="{{post.user_id}}">
+            <input class="profile-name" type="submit" value="{{ post.username }}">
         </form>
         {# Post Content #}
-        <div class="post">{{ post["content"] }}</div>
+        <div class="post">{{ post.content }}</div>
         {# Likes #}
-        <button id="like-button{{ post["id"] }}" onclick=likeFeature({{post['id']}}) class="like button">Like</button>
-        <h4 id="like-count{{ post['id'] }}" class="inline">{{ post["likes"] }} likes</h4>
+        <button id="like-button{{ post.id }}" onclick=likeFeature({{post.id}}) class="like button" style="display: inline-block;">Like</button>
+        <h4 id="like-count{{ post.id }}" class="inline">{{ post.likes }} likes</h4>
         {# Datetime #}
-        <p class="inline right">{{ post["datetime"] }}</p>
-        {# Comments, hidden until opened #}
-        <div id="comments{{ post["id"] }}">
+        <p class="inline right">{{ post.datetime }}</p>
+        {# Comments #}
+        <div id="comments{{ post.id }}">
             <h4 class="no-margin">Comments:</h4>
             {% for comment in comments %}
                 {% if comment.post_id == post.id %}
-                    <div class="comment"><b>{{comment.username}}</b>  {{ comment.comment }}</div>
+                <div class="comment">
+                    <div class="inline"><b>{{comment.username}}</b>  {{ comment.comment }}</div>
+                    <p class="inline right">{{ comment.datetime }}</p>
+                </div>
+                    
                 {% endif %}
             {% endfor %}
-
         </div>
-        <button class="comment-toggle no-margin" name="{{ post["id"] }}">Add Comment</button>
-
-        <form action="/comment-post/{{post["id"]}}" id="comment-input{{post["id"]}}" method="post" style="display:none">
+        <button class="comment-toggle no-margin" name="{{ post.id }}">Add Comment</button>
+        {# Comment input box hidden until opened #}
+        <form action="/comment-post/{{post.id}}" id="comment-input{{post.id}}" method="post" style="display:none">
             <textarea class="textbox" id="textbox{{post.id}}" placeholder="Comment" name="comment"></textarea>
-            <input id="submit-comment{{post["id"]}}" class="button" type="submit" value="Comment">
+            <input id="submit-comment{{post.id}}" class="button" type="submit" value="Comment">
         </form>
         <br>
         <br>

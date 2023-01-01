@@ -22,6 +22,31 @@ Session(app)
 CORS(app)
 
 
+@app.route("/follow-user/<int:id>", methods=["GET", "POST"])
+@login_required
+def follow(id):
+    
+    if request.method == "GET":
+        return redirect(request.url)
+    
+    if request.method == "POST":
+        user_id = session["user_id"]
+        
+        followed = executeDB("SELECT * FROM followers WHERE user_id=? AND following_id=?", [user_id, id])
+        if not followed:
+            change = 1
+            executeDB("INSERT INTO followers (user_id, following_id) VALUES (?, ?)", [user_id, id])
+        else:
+            change = -1
+            executeDB("DELETE FROM followers WHERE user_id=? AND following_id=?", [user_id, id])
+
+        executeDB("UPDATE users SET followers = (followers + ?) WHERE id=?", [change, user_id])
+        followers = executeDB("SELECT followers FROM users WHERE id=?", [user_id])
+        
+        # Return to JS file as JSON
+        return jsonify({"followers": followers[0][0], "user_id": user_id, "change":change })
+
+
 @app.route("/comment-post/<int:id>", methods=["GET", "POST"])
 @login_required
 def comment(id):
@@ -30,13 +55,13 @@ def comment(id):
     
     if request.method == "POST":
         content = request.form.get("comment")
+        print(content)
         if content:
+            print("AAAAAAAAA")
             create_comment(content, id)
         
         return redirect(request.url)
-        #return jsonify({"comments":comments})
-        
-    
+
 
 @app.route("/like-post/<int:id>", methods=["GET", "POST"])
 @login_required

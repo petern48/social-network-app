@@ -38,7 +38,7 @@ def create_comment(content, post_id):
     
     username = executeDB("SELECT username FROM users WHERE id=?", [user_id])
     username = username[0][0]
-    
+    print(f"{[user_id, post_id, username, content, now]}")
     executeDB("INSERT INTO comments (user_id, post_id, username, comment, datetime) VALUES (?,?,?,?,?)", [user_id, post_id, username, content, now])
 
 def get_comments():

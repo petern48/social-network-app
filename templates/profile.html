@@ -1,20 +1,21 @@
 {% extends "layout.html" %}
 
-{% block title %}{{ user["username"] }}{% endblock %}
+{% block title %}{{ user.username }}{% endblock %}
 
 {% block body %}
 
-<h1 class="center">{{ user["username"] }} </h1>
+<h1 class="center">{{ user.username }} </h1>
 
-    {% if user["id"] != session["user_id"] %}
-        <button class="center-button button">Follow</button>
+    {# If not the profile of the session user #}
+    {% if user.id != session.user_id %}
+        <button id="follow-button{{user.id}}" onclick=followFeature({{user.id}}) class="center-button button">Follow</button>
     {% endif %}
 
-    <h3 class="center">Followers: TODO</h3>
+    <h3 id="follow-count{{user.id}}" class="center">Followers: {{user.followers}}</h3>
 
     {% for post in posts %}
         <div>
-            <div>{{ post["username"] + ": " + post["content"] }}</div>
+            <div>{{ post.username + ": " + post.content }}</div>
             <form action"/like" method="post">
                 <input name="like{{ post["id"] }}" type="submit" value="Like">
             </form>
