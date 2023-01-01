@@ -1,6 +1,12 @@
 .inline {
     margin-top: 0px;
     display: inline-block;
+    margin-bottom: 0px;
+}
+
+.no-margin {
+    margin-top: 10px;
+    margin-bottom: 0px;
 }
 
 .username {
@@ -24,7 +30,7 @@
 }
 
 .comment{
-    margin-top: 0px;
+    margin-top: 5px;
     border: 1px solid gray;
 }
 

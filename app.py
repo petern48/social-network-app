@@ -5,7 +5,7 @@ import sqlite3 as sql
 from os import path
 from flask_cors import CORS
 from helpers import error,  get_posts, login_required, executeDB
-from helpers import create_post, create_comment
+from helpers import create_post, create_comment, get_comments
 
 
 app = Flask(__name__)
@@ -30,8 +30,8 @@ def comment(id):
     
     if request.method == "POST":
         content = request.form.get("comment")
-        create_comment(content, id)
-        comments = executeDB("SELECT * FROM comments WHERE post_id=?", [id])
+        if content:
+            create_comment(content, id)
         
         return redirect(request.url)
         #return jsonify({"comments":comments})
@@ -96,13 +96,11 @@ def index():
         if content:
             create_post(content)
             
-        
-    # Gets all posts from all users
+    # Gets all posts and comments from all users
     posts = get_posts()
-    
     comments = get_comments()
     
-    return render_template("index.html", posts=posts)
+    return render_template("index.html", posts=posts, comments=comments)
 
 
 @app.route("/register", methods=["GET", "POST"])

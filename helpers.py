@@ -42,7 +42,7 @@ def create_comment(content, post_id):
     executeDB("INSERT INTO comments (user_id, post_id, username, comment, datetime) VALUES (?,?,?,?,?)", [user_id, post_id, username, content, now])
 
 def get_comments():
-    return executeDB("SELECT * from comments");
+    return executeDB("SELECT * from comments")
 
 def create_post(content):
     """Creates a post, given the content to post"""

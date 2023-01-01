@@ -26,16 +26,23 @@
         <h4 id="like-count{{ post['id'] }}" class="inline">{{ post["likes"] }} likes</h4>
         {# Datetime #}
         <p class="inline right">{{ post["datetime"] }}</p>
-        <br>
-        {# Comments #}
-        <div id="comments{{ post["id"] }}"></div>
-        <button class="comment-toggle" name="{{ post["id"] }}">Add Comment</button>
+        {# Comments, hidden until opened #}
+        <div id="comments{{ post["id"] }}">
+            <h4 class="no-margin">Comments:</h4>
+            {% for comment in comments %}
+                {% if comment.post_id == post.id %}
+                    <div class="comment"><b>{{comment.username}}</b>  {{ comment.comment }}</div>
+                {% endif %}
+            {% endfor %}
+
+        </div>
+        <button class="comment-toggle no-margin" name="{{ post["id"] }}">Add Comment</button>
 
         <form action="/comment-post/{{post["id"]}}" id="comment-input{{post["id"]}}" method="post" style="display:none">
             <textarea class="textbox" id="textbox{{post.id}}" placeholder="Comment" name="comment"></textarea>
             <input id="submit-comment{{post["id"]}}" class="button" type="submit" value="Comment">
         </form>
-
+        <br>
         <br>
         
     {% endfor %}
