@@ -8,7 +8,7 @@
 
     {# If not the profile of the session user #}
     {% if user.id != session.user_id %}
-        <button id="follow-button{{user.id}}" onclick=followFeature({{user.id}}) class="center-button button">Follow</button>
+        <button id="follow-button{{user.id}}" onclick=followFeature({{user.id}}) class="follow button">Follow</button>
     {% endif %}
 
     <h3 id="follow-count{{user.id}}" class="center">Followers: {{user.followers}}</h3>

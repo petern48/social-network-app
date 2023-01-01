@@ -104,6 +104,44 @@ function commentFeature() {
     });
 }
 
+function setInitialValue() {
+    // Set like button as "Like" or "Unlike"
+    document.querySelectorAll(".like").forEach(function(button) {
+        const INDEXOFIDVALUE = 11;
+        post_id = button.id.slice(INDEXOFIDVALUE);
+
+        fetch(`/like-post/${post_id}`, {method:"GET"})
+        .then((response) => response.json())
+        .then((data) => { 
+            // Not liked yet
+            if (data["change"] == 1) {
+                button.innerHTML = "Like";
+            } else {
+                button.innerHTML = "Unlike";
+            }
+        })
+        .catch((error) => console.log(error));
+    })
+    // Set follow button as "Follow" or "Unfollow"
+    document.querySelectorAll(".follow").forEach(function(button) {
+        const INDEXOFIDVALUE = 13;
+        post_id = button.id.slice(INDEXOFIDVALUE);
+        console.log(`${post_id}`);
+
+        fetch(`/follow-user/${post_id}`, {method:"GET"})
+        .then((response) => response.json())
+        .then((data) => { 
+            // Not liked yet
+            if (data["change"] == 1) {
+                button.innerHTML = "Follow";
+            } else {
+                button.innerHTML = "Unfollow";
+            }
+        })
+        .catch((error) => console.log(error));
+    })
+}
+
 document.addEventListener("DOMContentLoaded", function() {
 
     // Create an object for each post
@@ -112,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Comment Feature
     commentFeature();
 
-
+    setInitialValue();
 });
 
 // Like and Unlike Feature
@@ -123,9 +161,7 @@ function likeFeature(postId) {
     fetch(`/like-post/${postId}`, { method: "POST" })
     .then((response) => response.json())
     .then((data) => {
-        console.log(`Data: ${data["likes"]}`);
         count.innerHTML = data["likes"] + " likes";
-
         if (data["change"] == 1) {
             button.innerHTML = "Unlike";
         }

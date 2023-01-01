@@ -26,9 +26,11 @@ def executeDB(query, arg=None):
     # Return value for cases where its needed
     return value
 
+
 def error(text):
     # Displays error
     return render_template("error.html", text=text)
+
 
 def create_comment(content, post_id):
     """Creates a comment for given post"""
@@ -41,8 +43,21 @@ def create_comment(content, post_id):
     print(f"{[user_id, post_id, username, content, now]}")
     executeDB("INSERT INTO comments (user_id, post_id, username, comment, datetime) VALUES (?,?,?,?,?)", [user_id, post_id, username, content, now])
 
+
 def get_comments():
     return executeDB("SELECT * from comments")
+
+def check_liked(user_id, id, action="like"):
+    """Check whether the user has liked or followed"""
+    if action == "like":
+        liked = executeDB("SELECT * FROM likes WHERE user_id=? AND post_id=?", [user_id, id])
+    if action == "follow":
+        liked = executeDB("SELECT * FROM followers WHERE user_id=? AND following_id=?", [user_id, id])
+    if not liked:
+        change = 1
+    else:
+        change = -1
+    return change
 
 def create_post(content):
     """Creates a post, given the content to post"""

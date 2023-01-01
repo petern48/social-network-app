@@ -5,7 +5,7 @@ import sqlite3 as sql
 from os import path
 from flask_cors import CORS
 from helpers import error,  get_posts, login_required, executeDB
-from helpers import create_post, create_comment, get_comments
+from helpers import create_post, create_comment, get_comments, check_liked
 
 
 app = Flask(__name__)
@@ -26,8 +26,13 @@ CORS(app)
 @login_required
 def follow(id):
     
+    user_id = session["user_id"]
+    # Check if user has followed user
+    change = check_liked(user_id, id, "follow")
+    
+    # When page is loaded
     if request.method == "GET":
-        return redirect(request.url)
+        return jsonify({"change": change})
     
     if request.method == "POST":
         user_id = session["user_id"]
@@ -55,33 +60,36 @@ def comment(id):
     
     if request.method == "POST":
         content = request.form.get("comment")
-        print(content)
         if content:
-            print("AAAAAAAAA")
             create_comment(content, id)
         
         return redirect(request.url)
 
 
-@app.route("/like-post/<int:id>", methods=["GET", "POST"])
+@app.route("/like-post/<int:post_id>", methods=["GET", "POST"])
 @login_required
-def like(id):
+def like(post_id):
     
+    user_id = session["user_id"]
+    # Check if user has liked post
+    change = check_liked(user_id, post_id)
+    
+    # When page is loaded
     if request.method == "GET":
-        return redirect("/")
+        return jsonify({"change": change})
     
+    # When like button clicked
     if request.method == "POST":
-        user_id = session["user_id"]
-        liked = executeDB("SELECT * FROM likes WHERE user_id=? AND post_id=?", [user_id, id])
-        if not liked:
-            change = 1
-            executeDB("INSERT INTO likes (user_id, post_id) VALUES (?, ?)", [user_id, id])
+        
+        # Add or remove like, depending on change
+        if change == 1:
+            executeDB("INSERT INTO likes (user_id, post_id) VALUES (?, ?)", [user_id, post_id])
         else:
-            change = -1
-            executeDB("DELETE FROM likes WHERE user_id=? AND post_id=?", [user_id, id])
-
-        executeDB("UPDATE posts SET likes = (likes + ?) WHERE id=?", [change, id])
-        likes = executeDB("SELECT likes FROM posts WHERE id=?", [id])
+            executeDB("DELETE FROM likes WHERE user_id=? AND post_id=?", [user_id, post_id])
+    
+        executeDB("UPDATE posts SET likes = (likes + ?) WHERE id=?", [change, post_id])
+        
+        likes = executeDB("SELECT likes FROM posts WHERE id=?", [post_id])
         
         # Return to JS file as JSON
         return jsonify({"likes": likes[0][0], "user_id": user_id, "change":change })
