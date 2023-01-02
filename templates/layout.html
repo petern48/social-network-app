@@ -13,26 +13,29 @@
 
     </head>
 
-    <body id="page-padding">
-        <nav>
+    <body>
+        <nav class="nav-bar">
             <div>
                 <div>
                     {% if session["user_id"] %}
-                        <ul>
-                            <li>Network</li>
-                            <li><a href= "/profile">{{ session["username"] }}</a></li>
-                            <li><a href="/">Home</a></li>
-                            <li ><a href="/logout">Log Out</a></li>
+                        <ul class="nav-list">
+                            <li class="network-title">Network</li>
+                            <li class="nav-item"><a class= "nav-link" href= "/profile">{{ session["username"] }}</a></li>
+                            <li class="nav-item"><a class= "nav-link" href="/" >Home</a></li>
+                            <li class="nav-item"><a class= "nav-link" href="/logout">Log Out</a></li>
                         </ul>
                     {% else %}
-                        <ul>
-                            <li><a href="/register">Register</a></li>
-                            <li><a href="/login">Log In</a></li>
+                        <ul class="nav-list">
+                            <li class="nav-item"><a class= "nav-link" href="/register">Register</a></li>
+                            <li class="nav-item"><a class= "nav-link" href="/login">Log In</a></li>
                         </ul>
                     {% endif %}
                 </div>
             </div>
         </nav>
+        <br>
+        <div class="page-padding">
         {% block body %}{% endblock %}
+        </div>
     </body>
 </html>
