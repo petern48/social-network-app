@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+    {% block subbody %}
+    {% endblock %}
+
+
+    {% for post in posts %}
+    <div id="post{{post.id}}">
+        {# Username Profile Link #}
+        <form action="/profile" method="post" class="inline">
+            <input type="hidden" name="user_id" value="{{post.user_id}}">
+            <input class="profile-name" type="submit" value="{{ post.username }}">
+        </form>
+        {# Delete Button (only if user's own post) #}
+        <button id="delete-button{{post.id}}" onclick=deleteFeature({{post.id}}) class="delete button" style="display:none">Delete Post</button>
+        {# Post Content #}
+        <div class="post">{{ post.content }}</div>
+        {# Likes #}
+        <button id="like-button{{ post.id }}" onclick=likeFeature({{post.id}}) class="like button" style="display: inline-block;">Like</button>
+        <h4 id="like-count{{ post.id }}" class="inline">{{ post.likes }} likes</h4>
+        {# Datetime #}
+        <p class="inline right">{{ post.datetime }}</p>
+        {# Comments #}
+        <div id="comments{{ post.id }}">
+            <h4 class="no-margin">Comments:</h4>
+            {% for comment in comments %}
+                {% if comment.post_id == post.id %}
+                <div class="comment">
+                    <div class="inline"><b>{{comment.username}}</b>  {{ comment.comment }}</div>
+                    <p class="inline right">{{ comment.datetime }}</p>
+                </div>
+                    
+                {% endif %}
+            {% endfor %}
+        </div>
+        <button class="comment-toggle no-margin" name="{{ post.id }}">Add Comment</button>
+        {# Comment input box hidden until opened #}
+        <form action="/comment-post/{{post.id}}" id="comment-input{{post.id}}" method="post" style="display:none">
+            <textarea class="textbox" id="textbox{{post.id}}" placeholder="Comment" name="comment"></textarea>
+            <input id="submit-comment{{post.id}}" class="button" type="submit" value="Comment">
+        </form>
+        <br>
+        <br>
+    </div>
+    {% endfor %}
+{% endblock %}

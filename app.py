@@ -4,8 +4,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3 as sql
 from os import path
 from flask_cors import CORS
-from helpers import error,  get_posts, login_required, executeDB
-from helpers import create_post, create_comment, get_comments, check_liked
+from helpers import error, login_required, executeDB
+from helpers import create_post, create_comment, check_liked
+from helpers import get_posts, get_comments, get_followers
 
 
 app = Flask(__name__)
@@ -25,6 +26,7 @@ CORS(app)
 @app.route("/delete-post/<int:post_id>", methods=["GET", "POST"])
 @login_required
 def delete(post_id):
+    """Display delete button and delete posts"""
     
     user_id = session["user_id"]
     valid = executeDB("SELECT * FROM posts WHERE id=? AND user_id=?", [post_id, user_id])
@@ -40,46 +42,16 @@ def delete(post_id):
     
     # Delete post, only if it belongs to the user
     if request.method == "POST" and valid == True:
-        print("POST DELETED")
         executeDB("DELETE FROM posts WHERE id=?", [post_id])
 
     return jsonify({ "valid": valid })
     
 
-
-@app.route("/follow-user/<int:id>", methods=["GET", "POST"])
-@login_required
-def follow(id):
-    
-    user_id = session["user_id"]
-    # Check if user has followed user
-    change = check_liked(user_id, id, "follow")
-    
-    # When page is loaded
-    if request.method == "GET":
-        return jsonify({"change": change})
-    
-    if request.method == "POST":
-        user_id = session["user_id"]
-        
-        followed = executeDB("SELECT * FROM followers WHERE user_id=? AND following_id=?", [user_id, id])
-        if not followed:
-            change = 1
-            executeDB("INSERT INTO followers (user_id, following_id) VALUES (?, ?)", [user_id, id])
-        else:
-            change = -1
-            executeDB("DELETE FROM followers WHERE user_id=? AND following_id=?", [user_id, id])
-
-        executeDB("UPDATE users SET followers = (followers + ?) WHERE id=?", [change, user_id])
-        followers = executeDB("SELECT followers FROM users WHERE id=?", [user_id])
-        
-        # Return to JS file as JSON
-        return jsonify({"followers": followers[0][0], "user_id": user_id, "change":change })
-
-
 @app.route("/comment-post/<int:id>", methods=["GET", "POST"])
 @login_required
 def comment(id):
+    """Add comments"""
+    
     if request.method == "GET":
         return redirect("/")
     
@@ -90,10 +62,38 @@ def comment(id):
         
         return redirect(request.url)
 
+@app.route("/follow-user/<int:id>", methods=["GET", "POST"])
+@login_required
+def follow(id):
+    """Display and update follow count"""
+    
+    user_id = session["user_id"]
+    # Check if already following user
+    change = check_liked(user_id, id, "follow")
+    
+    # When page is loaded
+    if request.method == "GET":
+        return jsonify({"change": change})
+    
+    if request.method == "POST":
+        
+        if change == 1:
+            executeDB("INSERT INTO followers (user_id, following_id) VALUES (?, ?)", [user_id, id])
+        # If change == -1
+        else:
+            executeDB("DELETE FROM followers WHERE user_id=? AND following_id=?", [user_id, id])
+
+        executeDB("UPDATE users SET followers = (followers + ?) WHERE id=?", [change, id])
+        followers = executeDB("SELECT followers FROM users WHERE id=?", [id])
+        print(f"Follow: {followers[0][0]}")
+        # Return to JS file as JSON
+        return jsonify({"followers": followers[0][0], "user_id": user_id, "change":change })
+
 
 @app.route("/like-post/<int:post_id>", methods=["GET", "POST"])
 @login_required
 def like(post_id):
+    """Display and update likes"""
     
     user_id = session["user_id"]
     # Check if user has liked post
@@ -120,7 +120,6 @@ def like(post_id):
         return jsonify({"likes": likes[0][0], "user_id": user_id, "change":change })
         
     
-
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
@@ -135,10 +134,13 @@ def profile():
         user_id = request.form.get("user_id")
     
     user = executeDB("SELECT * FROM users WHERE id=?", [user_id])
-    
     posts = get_posts(user_id)
+    comments = get_comments()
+    print(f"Id: {user[0]['id']}")
+    print(f"Username: {user[0]['username']}")
+    print(f"Profile followers: {user[0]['followers']}")
     
-    return render_template("profile.html", user=user[0], posts=posts)
+    return render_template("profile.html", user=user[0], posts=posts, comments=comments)
 
 
 @app.route("/", methods=["GET", "POST"])

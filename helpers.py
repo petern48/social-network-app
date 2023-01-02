@@ -43,9 +43,11 @@ def create_comment(content, post_id):
     print(f"{[user_id, post_id, username, content, now]}")
     executeDB("INSERT INTO comments (user_id, post_id, username, comment, datetime) VALUES (?,?,?,?,?)", [user_id, post_id, username, content, now])
 
-
 def get_comments():
-    return executeDB("SELECT * from comments")
+    return executeDB("SELECT * FROM comments")
+
+def get_followers(user_id):
+    return executeDB("SELECT * FROM followers WHERE following_id=?", [user_id])
 
 def check_liked(user_id, id, action="like"):
     """Check whether the user has liked or followed"""

@@ -1,27 +1,20 @@
-{% extends "layout.html" %}
+{% extends "posts-layout.html" %}
 
-{% block title %}{{ user.username }}{% endblock %}
+{% block title %}{{ user.username }} - Profile{% endblock %}
 
-{% block body %}
+{% block subbody %}
 
-<h1 class="center">{{ user.username }} </h1>
+    <h1 class="center">{{ user.username }} </h1>
 
+    {# Follow Count #}
+    <h3 id="follow-count{{user.id}}" class="center">Followers: {{user.followers}}</h3>
+    
     {# Follow Button only if not the profile of the session user #}
     {% if user.id != session.user_id %}
         <button id="follow-button{{user.id}}" onclick=followFeature({{user.id}}) class="follow button">Follow</button>
+    {% else %}
+        <br>
+        <h3>Your Posts:</h3>
     {% endif %}
-    {# Follow Count #}
-    <h3 id="follow-count{{user.id}}" class="center">Followers: {{user.followers}}</h3>
-
-    {% for post in posts %}
-        <div>
-            <div>{{ post.username + ": " + post.content }}</div>
-            <form action"/like" method="post">
-                <input name="like{{ post["id"] }}" type="submit" value="Like">
-            </form>
-            <p class="inline">{{ post["likes"] }} likes</p>
-            <p class="inline">{{ post["datetime"] }}</p>
-        </div>
-    {% endfor %}
 
 {% endblock %}

@@ -1,3 +1,4 @@
+/*
 // Array to hold all posts
 allPosts = [];
 
@@ -46,13 +47,6 @@ function findPost(postId) {
         }
     }
     return null;
-}
-
-function clearChildren(parent) {
-    while (parent.firstChild){
-        parent.removeChild(parent.firstChild);
-    }
-}
 
 function createPosts() {
     document.querySelectorAll(".like").forEach(function(element) {
@@ -60,6 +54,13 @@ function createPosts() {
         const postId = element.getAttribute("name");
         let post = new Post(postId);
     });
+}
+}*/
+
+function clearChildren(parent) {
+    while (parent.firstChild){
+        parent.removeChild(parent.firstChild);
+    }
 }
 
 function toggleCommentBox(postId, option) {
@@ -71,51 +72,19 @@ function toggleCommentBox(postId, option) {
     }
 }
 
-function commentFeature() {
-    document.querySelectorAll(".comment-toggle").forEach(function (element) {
-        
-        const postId = element.getAttribute("name");
-
-        element.addEventListener("click", function () {
-            
-            const inputform = element.nextElementSibling;
-                
-            // Open comment box
-            if (element.innerHTML == "Add Comment") {
-                toggleCommentBox(postId, "open");
-                element.innerHTML = "Hide Comment Box";
-
-                const submit = document.querySelector(`#submit-comment${postId}`);
-                const textBox = document.querySelector(`#textbox${postId}`)
-            
-                // Submit Comment Button Feature
-                submit.addEventListener("click", function () {
-
-                    element.innerHTML = "Add Comment";
-                    toggleCommentBox(postId, "close");
-                });
-            }
-            // Close comment box if it said "Hide Comment Box"
-            else {
-                element.innerHTML = "Add Comment";
-                toggleCommentBox(postId, "close");
-            }
-        });
-    });
-}
-
 function setInitialValues() {
     // Set like button as "Like" or "Unlike"
     document.querySelectorAll(".like").forEach(function(button) {
         const INDEXOFIDVALUE = 11;
         post_id = button.id.slice(INDEXOFIDVALUE);
-
+        
         fetch(`/like-post/${post_id}`, {method:"GET"})
         .then((response) => response.json())
         .then((data) => { 
             // Not liked yet
             if (data["change"] == 1) {
                 button.innerHTML = "Like";
+            // Already Liked
             } else {
                 button.innerHTML = "Unlike";
             }
@@ -126,29 +95,31 @@ function setInitialValues() {
     document.querySelectorAll(".follow").forEach(function(button) {
         const INDEXOFIDVALUE = 13;
         post_id = button.id.slice(INDEXOFIDVALUE);
-
+        
         fetch(`/follow-user/${post_id}`, {method:"GET"})
         .then((response) => response.json())
         .then((data) => { 
-            // Not liked yet
+            // Not followed yet
             if (data["change"] == 1) {
                 button.innerHTML = "Follow";
+            // Already followed
             } else {
                 button.innerHTML = "Unfollow";
             }
         })
         .catch((error) => console.log(error));
     })
+
     // Display delete button for user's own post. 
     // Note: There is additional backend protection from deleting other user's posts
     document.querySelectorAll("button.delete").forEach(function(button) {
         const INDEXOFIDVALUE = 13;
         post_id = button.id.slice(INDEXOFIDVALUE);
-
+        
         fetch(`/delete-post/${post_id}`, {method:"GET"})
         .then((response) => response.json())
         .then((data) => { 
-            // Display delete button
+            // Display delete button, valid user
             if (data["valid"] == true) {
                 button.style.display = "block";
             }
@@ -158,13 +129,11 @@ function setInitialValues() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-
-    // Create an object for each post
-    createPosts();
     
-    // Comment Feature
+    // createPosts();
+    
     commentFeature();
-
+    
     setInitialValues();
 });
 
@@ -172,7 +141,7 @@ document.addEventListener("DOMContentLoaded", function() {
 function likeFeature(postId) {
     const button = document.querySelector(`#like-button${postId}`);
     const count = document.querySelector(`#like-count${postId}`);
-
+    
     fetch(`/like-post/${postId}`, { method: "POST" })
     .then((response) => response.json())
     .then((data) => {
@@ -191,11 +160,10 @@ function likeFeature(postId) {
 function followFeature(following_id) {
     const button = document.querySelector(`#follow-button${following_id}`);
     const count = document.querySelector(`#follow-count${following_id}`);
-
+    
     fetch(`/follow-user/${following_id}`, {method: "POST"})
     .then((response) => response.json())
     .then((data) => {
-        console.log(data["followers"]);
         count.innerHTML = `Followers: ${data["followers"]}`;
         if (data["change"] == 1) {
             button.innerHTML = "Unfollow";
@@ -213,7 +181,7 @@ function deleteFeature(post_id) {
     
     // Set button text to "Confirm?"
     if (button.innerHTML == "Delete Post") {
-        button.innerHTML = "Confirm?";
+        button.innerHTML = "Confirm Delete?";
     }
     // Delete post after confirmation
     else {
@@ -226,10 +194,39 @@ function deleteFeature(post_id) {
                 alert("Post permanently removed.");
             }
             else {
-                alert("You are not authorized to delete other users' posts!");
+                alert("ಠ_ಠ You are not authorized to delete other users' posts!  ಠ_ಠ  Shame on you (ಥ﹏ಥ)");
             }
         })
         .catch((error) => console.log(error));
     }
+}
 
+function commentFeature() {
+    document.querySelectorAll(".comment-toggle").forEach(function (element) {
+        
+        const postId = element.getAttribute("name");
+
+        element.addEventListener("click", function () {
+                
+            // Open comment box
+            if (element.innerHTML == "Add Comment") {
+                toggleCommentBox(postId, "open");
+                element.innerHTML = "Hide Comment Box";
+
+                const submit = document.querySelector(`#submit-comment${postId}`);
+            
+                // Submit Comment Button Feature
+                submit.addEventListener("click", function () {
+
+                    element.innerHTML = "Add Comment";
+                    toggleCommentBox(postId, "close");
+                });
+            }
+            // Close comment box if it said "Hide Comment Box"
+            else {
+                element.innerHTML = "Add Comment";
+                toggleCommentBox(postId, "close");
+            }
+        });
+    });
 }
