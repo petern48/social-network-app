@@ -22,6 +22,17 @@ Session(app)
 CORS(app)
 
 
+@app.route("/delete-post/<int:post_id>", methods=["POST"])
+@login_required
+def delete(post_id):
+    
+    if request.method == "POST":
+        executeDB("DELETE FROM posts WHERE id=?", [post_id])
+
+        return jsonify({ "deleted": True })
+    
+
+
 @app.route("/follow-user/<int:id>", methods=["GET", "POST"])
 @login_required
 def follow(id):

@@ -192,7 +192,26 @@ function followFeature(following_id) {
     .catch((error) => console.log(error));
 }
 
-// Comment Feature
-function updateComments(post_id) {
-    commentdiv = 1;
+function deleteFeature(post_id) {
+    const button = document.querySelector(`#delete-button${post_id}`);
+    const post = document.querySelector(`div#post${post_id}`);
+    console.log(button);
+    console.log(post);
+    
+    // Set button text to "Confirm?"
+    if (button.innerHTML == "Delete Post") {
+        button.innerHTML = "Confirm?";
+    }
+    // Delete Post
+    else {
+        fetch(`/delete-post/${post_id}`, {method: "POST"})
+        .then((response) => response.json())
+        .then((data) => {
+            // Remove post from display
+            clearChildren(post);
+            alert("Post permanently removed.");
+        })
+        .catch((error) => console.log(error));
+    }
+
 }

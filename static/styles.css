@@ -44,6 +44,12 @@
 .follow {
     font-size: 20px;
     margin: auto;
+    background-color: cyan !important;
+}
+
+.delete {
+    background-color: red !important;
+    float: right;
 }
 
 .button {
