@@ -22,14 +22,28 @@ Session(app)
 CORS(app)
 
 
-@app.route("/delete-post/<int:post_id>", methods=["POST"])
+@app.route("/delete-post/<int:post_id>", methods=["GET", "POST"])
 @login_required
 def delete(post_id):
     
-    if request.method == "POST":
+    user_id = session["user_id"]
+    valid = executeDB("SELECT * FROM posts WHERE id=? AND user_id=?", [post_id, user_id])
+
+    if valid != []:
+        valid = True
+    else:
+        valid = False
+    
+    # Check if delete button should be displayed
+    if request.method == "GET":
+        pass
+    
+    # Delete post, only if it belongs to the user
+    if request.method == "POST" and valid == True:
+        print("POST DELETED")
         executeDB("DELETE FROM posts WHERE id=?", [post_id])
 
-        return jsonify({ "deleted": True })
+    return jsonify({ "valid": valid })
     
 
 

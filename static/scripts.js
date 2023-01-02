@@ -104,7 +104,7 @@ function commentFeature() {
     });
 }
 
-function setInitialValue() {
+function setInitialValues() {
     // Set like button as "Like" or "Unlike"
     document.querySelectorAll(".like").forEach(function(button) {
         const INDEXOFIDVALUE = 11;
@@ -126,7 +126,6 @@ function setInitialValue() {
     document.querySelectorAll(".follow").forEach(function(button) {
         const INDEXOFIDVALUE = 13;
         post_id = button.id.slice(INDEXOFIDVALUE);
-        console.log(`${post_id}`);
 
         fetch(`/follow-user/${post_id}`, {method:"GET"})
         .then((response) => response.json())
@@ -136,6 +135,22 @@ function setInitialValue() {
                 button.innerHTML = "Follow";
             } else {
                 button.innerHTML = "Unfollow";
+            }
+        })
+        .catch((error) => console.log(error));
+    })
+    // Display delete button for user's own post. 
+    // Note: There is additional backend protection from deleting other user's posts
+    document.querySelectorAll("button.delete").forEach(function(button) {
+        const INDEXOFIDVALUE = 13;
+        post_id = button.id.slice(INDEXOFIDVALUE);
+
+        fetch(`/delete-post/${post_id}`, {method:"GET"})
+        .then((response) => response.json())
+        .then((data) => { 
+            // Display delete button
+            if (data["valid"] == true) {
+                button.style.display = "block";
             }
         })
         .catch((error) => console.log(error));
@@ -150,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Comment Feature
     commentFeature();
 
-    setInitialValue();
+    setInitialValues();
 });
 
 // Like and Unlike Feature
@@ -195,21 +210,24 @@ function followFeature(following_id) {
 function deleteFeature(post_id) {
     const button = document.querySelector(`#delete-button${post_id}`);
     const post = document.querySelector(`div#post${post_id}`);
-    console.log(button);
-    console.log(post);
     
     // Set button text to "Confirm?"
     if (button.innerHTML == "Delete Post") {
         button.innerHTML = "Confirm?";
     }
-    // Delete Post
+    // Delete post after confirmation
     else {
         fetch(`/delete-post/${post_id}`, {method: "POST"})
         .then((response) => response.json())
         .then((data) => {
             // Remove post from display
-            clearChildren(post);
-            alert("Post permanently removed.");
+            if (data["valid"] == true) {
+                clearChildren(post);
+                alert("Post permanently removed.");
+            }
+            else {
+                alert("You are not authorized to delete other users' posts!");
+            }
         })
         .catch((error) => console.log(error));
     }

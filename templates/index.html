@@ -20,8 +20,8 @@
             <input type="hidden" name="user_id" value="{{post.user_id}}">
             <input class="profile-name" type="submit" value="{{ post.username }}">
         </form>
-        {# Delete Button (ONLY IF OWN POST) #}
-        <button id="delete-button{{post.id}}" onclick=deleteFeature({{post.id}}) class="delete button">Delete Post</button>
+        {# Delete Button (only if user's own post) #}
+        <button id="delete-button{{post.id}}" onclick=deleteFeature({{post.id}}) class="delete button" style="display:none">Delete Post</button>
         {# Post Content #}
         <div class="post">{{ post.content }}</div>
         {# Likes #}
