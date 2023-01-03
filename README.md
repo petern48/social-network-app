@@ -1,6 +1,6 @@
 # Social Network App
 
-<!--### Video Demo: **URL** -->
+### Video URL: https://youtu.be/I-WE7OxF8TE
 
 ### Setup
 Clone the repository:
@@ -27,8 +27,8 @@ Social Network App is a Flask App implemented to behave similar to social media 
 
 #### Register, Login, Logout
 
-#### Create Post
+#### Create Post and Delete Posts
 
-#### Like and Comment on Posts
+#### Like/Unlike Posts and Comment on Posts
 
-#### View Other User's profiles
+#### View Other User's profiles and Follow
